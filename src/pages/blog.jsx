@@ -1,4 +1,4 @@
-import React from 'react';
+const parse = require('html-react-parser');
 import Author1 from "./../images/Author/1.jpg";
 import Author2 from "./../images/Author/2.jpg";
 import Author3 from "./../images/Author/3.jpg";
@@ -30,7 +30,7 @@ const Blog = ({posts}) => {
                      <Link href={"blog/"+post._id}>
                      <h2 className="font-bold text-xl text-black dark:text-white hover:text-[#2667FC] mb-2 transition-all duration-300">{post.title}</h2>
                      </Link>
-                      <p className="text-lg text-[#A1A1A1] dark:text-[#a3a3a3]">{post.desc.substring(0,124)}...</p>
+                      <p className="text-lg text-[#A1A1A1] dark:text-[#a3a3a3]">{ parse(`${post.desc.substring(0,124)}`)}...</p>
                   </div>
                   <div className="blog-author-info flex gap-5 px-5 py-5">
                       <div className="author-img">

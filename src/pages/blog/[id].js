@@ -1,4 +1,5 @@
 import Image from "next/image";
+const parse = require('html-react-parser');
 export async function getServerSideProps(context) {
     // Get the dynamic ID from the URL
     const { id } = context.query;
@@ -39,7 +40,8 @@ const Id = ({post}) => {
                 <div className="blog-post">
                     <Image src={post.photo} alt={post.title} width={600} height={400} className="mx-auto py-10"></Image>
                     <h2 className="text-3xl font-bold text-black mb-5">{post.title}</h2>
-                    <p className='text-black mb-5'>{post.desc}</p>
+                    <p className='text-black mb-5'></p>
+                   { parse(`<div>${post.desc}</div>`)}
                 </div>
             </div>
         </section>
