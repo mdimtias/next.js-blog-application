@@ -1,30 +1,30 @@
 import axios from "axios";
 import dynamic from "next/dynamic";
 import React, { useState } from "react";
-
-import {  toast } from "react-hot-toast";
 const Toaster = dynamic(() => import('react-hot-toast').then((mod) => mod.Toaster), {
   ssr: false,
 });
+import { toast } from "react-hot-toast";
 const ReactQuill = dynamic(import("react-quill"), { ssr: false });
 import "react-quill/dist/quill.snow.css";
 import "react-quill/dist/quill.snow.css";
 
-const CreatePost = () => {
-  const [title, setTitle] = useState("");
-  const [photo, setPhoto] = useState("");
-  const [category, setCategory] = useState("");
-  const [content, setContent] = useState("");
+const EditPost = ({post}) => {
+  const [title, setTitle] = useState(post.title);
+  const [photo, setPhoto] = useState(post.photo);
+  const [category, setCategory] = useState(post.categories[0]);
+  const [content, setContent] = useState(post.desc);
 
   const handleChange = (value) => {
     setContent(value);
   };
 
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await axios.post("https://blogapi-developertanbir-gmailcom.vercel.app/api/posts", {
+      const response = await axios.put(`https://blogapi-developertanbir-gmailcom.vercel.app/api/posts/${post._id}`, {
         title,
         desc: content,
         photo,
@@ -32,14 +32,11 @@ const CreatePost = () => {
         username: "imtias",
       });
       if (response.status === 200) {
-        return toast.success("Post Successful!");
+        return toast.success("Post Update Successful!");
       }
     } catch (error) {
-      if (error.response.status === 403) {
-        return toast.error(error.response.data.message);
-      }
-      console.error("Failed to save blog post:", error);
-      return toast.error("Post Fail!");
+      console.error("Failed to update blog post:", error);
+      return toast.error("Post Update Fail!");
     }
   };
 
@@ -62,7 +59,7 @@ const CreatePost = () => {
             onChange={(e) => setPhoto(e.target.value)}
             className="px-5 py-3 w-full outline-none mb-10 border-2 rounded-md font-bold text-xl border-gray-500"
           />
-          <input
+           <input
             type="text"
             placeholder="Category Name"
             value={category}
@@ -80,7 +77,7 @@ const CreatePost = () => {
             type="submit"
             className="py-2 px-8 border rounded-md bg-green-500 text-white font-bold mt-5"
           >
-            Save
+            Update
           </button>
         </form>
       </div>
@@ -88,4 +85,28 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default EditPost;
+
+export async function getServerSideProps(context) {
+    // Get the dynamic ID from the URL
+    const { id } = context.query;
+    // Fetch blog post data from a database or API using the ID
+    const res = await fetch(`https://blogapi-developertanbir-gmailcom.vercel.app/api/posts/${id}`);
+    const post = await res.json();
+
+    // Check if the post exists
+    if (!post || post.name === "CastError") {
+        return {
+        notFound: true,
+        props: {
+            title: "Post not found",
+          },
+        };
+    }
+    // Pass the blog post data as props to the page component
+    return {
+      props: {
+        post
+      },
+    };
+  }

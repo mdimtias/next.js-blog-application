@@ -1,20 +1,33 @@
-import React, { useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import dynamic from 'next/dynamic';
 
-const DeleteModal = (postId) => {
-    const [showModal, setShowModal] = useState(true);
+const DeleteModal = ({postId, showModal, setShowModal}) => {
 const deletePost = ()=>{
-console.log(postId)
 
 
-axios.delete(`http://localhost:5000/api/posts/${postId.postId}`)
+axios.delete(`https://blogapi-developertanbir-gmailcom.vercel.app/api/posts/${postId}`, {
+  data: {
+    username: 'imtias'
+  }
+})
 .then(response => {
   // Handle successful response
-  console.log('Post deleted:', response.data);
+  if(response.status === 200){
+    toast.success(response.data)
+    window.location.reload();
+  }
+  setShowModal(false)
 })
 .catch(error => {
+  console.log(error)
+  if(error.response.status === 401){
+    return toast.error("You have access only to Delete by default imtias author post")
+  }
   // Handle error
   console.error('Error deleting post:', error);
+  toast.error("Delete Fail!")
+  setShowModal(false)
 });
 }
     return (
@@ -38,7 +51,7 @@ axios.delete(`http://localhost:5000/api/posts/${postId.postId}`)
             </h3>
             <div className="mt-2">
               <p className="text-sm text-gray-500">
-                Modal content goes here. Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, consectetur accusamus.
+              Are you sure you want to delete the post permanently?
               </p>
             </div>
           </div>
