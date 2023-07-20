@@ -38,6 +38,3 @@ The application will be available at http://localhost:3000.
 * React
 * Tailwind CSS
 * Axios
-
-### Acknowledgments
-The project was built as part of an internship with Internshala. 
